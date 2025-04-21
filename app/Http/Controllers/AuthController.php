@@ -10,28 +10,14 @@ class AuthController extends Controller
 {
     public function register_user(Request $request)
     {
-        /*
-        - validasi request
-        - cek nomor (pake validate())
-        - cek role (pake validate())
-        - cek user apakah sudah ada atau belum berdasarkan email
-        - buat user
-        - kirim response
-        */
-
         $fields = $request->validate([
             'username' => 'required|string',
             'email' => 'required|string|unique:users,email',
-            'role' => 'user',
             'password' => 'required|string|confirmed'
         ]);
 
-        // cek email
-        if (User::where('email', $fields['email'])->exists()) {
-            return response()->json([
-                'message' => 'Email already exists',
-            ], 409);
-        }
+        $fields['password'] = bcrypt($fields['password']);
+        $fields['role'] = 'user';
 
         // buat user
         $user = User::create($fields);
@@ -44,13 +30,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        /*
-            1. validate request
-            2. cek apakah ada user dengan email tersebut
-            3. jika ada user, buat token
-            4. return token as response
-        */
-
         $fields = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string|confirmed'

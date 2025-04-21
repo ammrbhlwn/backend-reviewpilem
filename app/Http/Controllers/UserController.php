@@ -21,9 +21,8 @@ class UserController extends Controller
         // Validate the request data
         $fields = $request->validate([
             'nama' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255|unique:users,email,' . auth()->id(), // Optional, unique except for the current user
+            'email' => 'nullable|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6',
-            'nomor' => 'nullable|string|max:20'
         ]);
 
         // Hash the password

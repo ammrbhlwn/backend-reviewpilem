@@ -17,13 +17,11 @@ class AdminController extends Controller
         };
 
         $fields = $request->validate([
-            'nama_genre' => 'required|string',
+            'nama' => 'required|string',
         ]);
 
         try {
-            $genre = Genre::create([
-                'nama_genre' => 'required|string',
-            ]);
+            $genre = Genre::create($fields);
 
             if (!$genre) {
                 throw new \Exception('Failed to create genre');
@@ -47,7 +45,8 @@ class AdminController extends Controller
             'nama_genre' => 'required|string',
         ]);
 
-        $genre = Genre::where('id', $id)->first();
+        $genre = Genre::find($id);
+
         if (!$genre) {
             return response()->json([
                 'message' => 'Genre not found'
@@ -80,8 +79,6 @@ class AdminController extends Controller
         $fields = $request->validate([
             'judul' => 'required|string',
             'sinopsis' => 'required|string',
-            'gambar' => 'array',
-            'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'status_penayangan' => 'required|string',
             'total_episode' => 'required|integer',
             'tanggal_rilis' => 'required|date',
@@ -89,16 +86,17 @@ class AdminController extends Controller
         ]);
 
         try {
-            $film = Film::create([
-                'judul' => 'required|string',
-                'sinopsis' => 'required|string',
-                'gambar' => 'array',
-                'gambar.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
-                'status_penayangan' => 'required|string',
-                'total_episode' => 'required|integer',
-                'tanggal_rilis' => 'required|date',
-                'id_genre' => 'required|exists:genres,id',
-            ]);
+            $film = Film::create(
+                [
+                    'judul' => $fields['judul'],
+                    'sinopsis' => $fields['sinopsis'],
+                    'status_penayangan' => $fields['status_penayangan'],
+                    'total_episode' => $fields['total_episode'],
+                    'tanggal_rilis' => $fields['tanggal_rilis'],
+                ]
+            );
+
+            $film->genres()->attach($fields['id_genre']);
 
             if (!$film) {
                 throw new \Exception('Failed to create film');
@@ -112,17 +110,22 @@ class AdminController extends Controller
 
         return response()->json([
             'message' => 'Berhasil menambahkan film',
-            'data' => $film
+            'data' => $film->load('genres')
         ], 200);
     }
 
     public function edit_film(Request $request, $id)
     {
         $fields = $request->validate([
-            'nama_genre' => 'required|string',
+            'judul' => 'nullable|string',
+            'sinopsis' => 'nullable|string',
+            'status_penayangan' => 'nullable|string',
+            'total_episode' => 'nullable|integer',
+            'tanggal_rilis' => 'nullable|date',
+            'id_genre' => 'nullable|exists:genres,id',
         ]);
 
-        $film = Film::where('id', $id)->first();
+        $film = Film::find($id);
         if (!$film) {
             return response()->json([
                 'message' => 'Film not found'
@@ -132,6 +135,10 @@ class AdminController extends Controller
         try {
             // update
             $film->update($fields);
+
+            if (isset($fields['id_genre'])) {
+                $film->genres()->sync([$fields['id_genre']]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred',
@@ -141,7 +148,7 @@ class AdminController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengubah film',
-            'data' => $film
+            'data' => $film->load('genres')
         ], 200);
     }
 }
