@@ -23,9 +23,9 @@ class UserSeeder extends Seeder
         // Seed the users table
         DB::table('users')->insert([
             [
-                'username' => 'Admin User',
+                'nama' => 'Admin User',
+                'username' => 'adminadmin',
                 'email' => 'admin@example.com',
-                'email_verified_at' => now(),
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'remember_token' => null,
@@ -33,9 +33,9 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'username' => 'User',
+                'nama' => 'User User',
+                'username' => 'useruser',
                 'email' => 'user@example.com',
-                'email_verified_at' => now(),
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'remember_token' => null,

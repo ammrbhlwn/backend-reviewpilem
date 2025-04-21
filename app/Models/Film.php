@@ -2,39 +2,54 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\StatusPenayangan;
 
 class Film extends Model
 {
-    use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'film';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'id',
         'judul',
         'sinopsis',
-        'gambar',
         'status_penayangan',
         'total_episode',
         'tanggal_rilis',
-        'id_genre',
     ];
 
-    public function photos(): HasMany
+    protected $casts = [
+        'status_penayangan' => StatusPenayangan::class,
+        'tanggal_rilis' => 'date',
+    ];
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class, 'film_genre');
+    }
+
+    public function photos()
     {
         return $this->hasMany(FilmPhoto::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function filmLists()
+    {
+        return $this->hasMany(UserFilmList::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_film_list')
+            ->using(UserFilmList::class)
+            ->withPivot('status_list')
+            ->withTimestamps();
+    }
+
+    public function averageRating()
+    {
+        return $this->reviews()->avg('rating');
     }
 }
