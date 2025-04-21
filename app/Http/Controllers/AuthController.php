@@ -5,26 +5,34 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\UserRole;
 
 class AuthController extends Controller
 {
     public function register_user(Request $request)
     {
         $fields = $request->validate([
-            'username' => 'required|string',
-            'email' => 'required|string|unique:users,email',
-            'password' => 'required|string|confirmed'
+            'nama' => 'required|string',
+            'email' => 'required|string|email',
+            'password' => 'required|string'
         ]);
+
+        if (User::where('email', $fields['email'])->exists()) {
+            return response()->json([
+                'message' => 'Email already exists',
+            ], 409);
+        }
 
         $fields['password'] = bcrypt($fields['password']);
         $fields['role'] = 'user';
+        $fields['username'] = strtolower(str_replace(' ', '_', $fields['nama']));
 
         // buat user
         $user = User::create($fields);
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user,
+            'user' => $user->only(['id', 'nama', 'username', 'email', 'role']),
         ], 201);
     }
 
@@ -32,7 +40,7 @@ class AuthController extends Controller
     {
         $fields = $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string|confirmed'
+            'password' => 'required|string'
         ]);
 
         $user = User::where('email', $fields['email'])->first();
@@ -43,7 +51,7 @@ class AuthController extends Controller
             ], 404);
         }
 
-        if ($user->role == 'admin') {
+        if ($user->role ===  UserRole::Admin) {
             return response()->json([
                 'message' => 'unauthorized',
             ], 401);
@@ -58,7 +66,7 @@ class AuthController extends Controller
         $token = $user->createToken('myapptoken')->plainTextToken;
         return response()->json([
             'message' => 'User Login Successful',
-            'user' => $user,
+            'user' => $user->only(['id', 'nama', 'username', 'email', 'role']),
             'token' => $token
         ], 201);
     }
@@ -67,7 +75,7 @@ class AuthController extends Controller
     {
         $fields = $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string|confirmed'
+            'password' => 'required|string'
         ]);
 
         $user = User::where('email', $fields['email'])->first();
@@ -78,7 +86,7 @@ class AuthController extends Controller
             ], 404);
         }
 
-        if ($user->role != 'admin') {
+        if ($user->role !== UserRole::Admin) {
             return response()->json([
                 'message' => 'unauthorized',
             ], 401);
@@ -93,7 +101,7 @@ class AuthController extends Controller
         $token = $user->createToken('myapptoken')->plainTextToken;
         return response()->json([
             'message' => 'Admin Login Successful',
-            'user' => $user,
+            'user' => $user->only(['id', 'nama', 'username', 'email', 'role']),
             'token' => $token
         ], 201);
     }

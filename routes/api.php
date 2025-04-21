@@ -32,6 +32,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/review/{id}', [UserController::class, 'edit_review']);
     Route::put('/user/reaction/{id}', [UserController::class, 'edit_reaction']);
     Route::delete('/user/review/{id}', [UserController::class, 'delete_review']);
-    //
-
 });
