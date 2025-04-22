@@ -12,15 +12,18 @@ Route::post('/admin/login', [AuthController::class, 'login_admin']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/admin/genre', [AdminController::class, 'add_genre']);
     Route::post('/admin/film', [AdminController::class, 'add_film']);
+    Route::post('/admin/film/{id}/photos', [AdminController::class, 'add_film_photos']);
     Route::put('/admin/genre/{id}', [AdminController::class, 'edit_genre']);
     Route::put('/admin/film/{id}', [AdminController::class, 'edit_film']);
     Route::delete('/admin/film/{id}', [AdminController::class, 'delete_film']);
     Route::delete('/admin/genre/{id}', [AdminController::class, 'delete_genre']);
+    Route::delete('/admin/film/photo/{id}', [AdminController::class, 'delete_film_photo']);
 });
 
 // route user

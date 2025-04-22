@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('films', function (Blueprint $table) {
             $table->id();
+            $table->string('judul');
+            $table->text('sinopsis');
+            $table->enum('status_penayangan', ['not_yet_aired', 'airing', 'finished_airing']);
+            $table->integer('total_episode');
+            $table->date('tanggal_rilis');
             $table->timestamps();
         });
     }
