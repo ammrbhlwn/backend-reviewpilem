@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class UserFilmList extends Pivot
 {
-    protected $table = 'user_film_list';
+    protected $table = 'user_film_lists';
 
     public $timestamps = true;
 

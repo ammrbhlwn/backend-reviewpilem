@@ -30,7 +30,7 @@ class Film extends Model
         return $this->hasMany(FilmPhoto::class);
     }
 
-    public function reviews()
+    public function review()
     {
         return $this->hasMany(Review::class);
     }
@@ -42,7 +42,7 @@ class Film extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_film_list')
+        return $this->belongsToMany(User::class, 'user_film_lists')
             ->using(UserFilmList::class)
             ->withPivot('status_list')
             ->withTimestamps();
@@ -50,6 +50,6 @@ class Film extends Model
 
     public function averageRating()
     {
-        return $this->reviews()->avg('rating');
+        return $this->review()->avg('rating');
     }
 }

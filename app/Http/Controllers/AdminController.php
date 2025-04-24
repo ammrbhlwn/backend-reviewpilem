@@ -32,7 +32,7 @@ class AdminController extends Controller
         return response()->json([
             'message' => 'Berhasil menambahkan genre',
             'data' => $genre
-        ], 200);
+        ], 201);
     }
 
     public function edit_genre(Request $request, $id)
@@ -116,7 +116,7 @@ class AdminController extends Controller
                 'genre_nama' => $film->genres->pluck('nama')->join(', '),
                 'photos' => $photos,
             ]
-        ], 200);
+        ], 201);
     }
 
     public function add_film_photos(Request $request, $id)
@@ -140,21 +140,21 @@ class AdminController extends Controller
                 $film->photos()->create(['photo' => $path]);
                 $photos[] = Storage::url($path);
             }
-
-            return response()->json([
-                'message' => 'Berhasil menambahkan foto',
-                'data' => [
-                    'id' => $film->id,
-                    'judul' => $film->judul,
-                    'film_photos' => $photos,
-                ]
-            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menambahkan foto',
                 'error' => $e->getMessage()
             ], 500);
         }
+
+        return response()->json([
+            'message' => 'Berhasil menambahkan foto',
+            'data' => [
+                'id' => $film->id,
+                'judul' => $film->judul,
+                'film_photos' => $photos,
+            ]
+        ], 201);
     }
 
     public function delete_film_photo($photoId)

@@ -33,7 +33,7 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function reviews()
+    public function review()
     {
         return $this->hasMany(Review::class);
     }

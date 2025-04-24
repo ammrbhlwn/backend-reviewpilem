@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
+    protected $table = 'review';
+
     protected $fillable = [
         'film_id',
         'user_id',
