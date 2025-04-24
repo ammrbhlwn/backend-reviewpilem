@@ -22,19 +22,19 @@ class AdminLogSeeder extends Seeder
         // Seed the admin_log table
         DB::table('admin_log')->insert([
             [
-                'id_admin' => 1, // Ensure this user_id exists in the users table and has the 'admin' role
+                'id_admin' => 1,
                 'timestamp' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id_admin' => 1, // Ensure this user_id exists in the users table and has the 'admin' role
+                'id_admin' => 1,
                 'timestamp' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id_admin' => 2, // Ensure this user_id exists in the users table and has the 'admin' role
+                'id_admin' => 2,
                 'timestamp' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),

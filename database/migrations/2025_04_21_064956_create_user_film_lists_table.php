@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_film_lists', function (Blueprint $table) {
-            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('film_id')->constrained()->onDelete('cascade');
+            $table->enum('status_list', ['plan_to_watch', 'watching', 'completed', 'on_hold', 'dropped']);
             $table->timestamps();
+
+            $table->primary(['user_id', 'film_id']);
         });
     }
 

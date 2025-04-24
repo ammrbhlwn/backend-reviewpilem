@@ -27,7 +27,7 @@ class User extends Authenticatable
 
     public function filmLists()
     {
-        return $this->belongsToMany(Film::class, 'user_film_list')
+        return $this->belongsToMany(Film::class, 'user_film_lists')
             ->using(UserFilmList::class)
             ->withPivot('status_list')
             ->withTimestamps();
