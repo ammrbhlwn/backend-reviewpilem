@@ -6,22 +6,24 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+
+// route auth
 Route::post('/user/register', [AuthController::class, 'register_user']);
 Route::post('/user/login', [AuthController::class, 'login']);
 Route::post('/admin/login', [AuthController::class, 'login_admin']);
 
-// route guest
-Route::get('/film/list', [GuestController::class, 'get_all_film']);
-Route::get('/film/{id}', [GuestController::class, 'get_film_by_id']);
-Route::get('/user/list', [GuestController::class, 'get_user_list']);
-Route::post('/search/{}', [GuestController::class, 'search_film']);
-
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [UserController::class, 'get_all_user']);
-    Route::get('/user/profile/{id}', [UserController::class, 'get_user_by_id']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+// route guest
+Route::get('/list/film', [GuestController::class, 'get_all_film']);
+Route::get('/film/{id}', [GuestController::class, 'get_film_by_id']);
+Route::get('/list/user', [GuestController::class, 'get_user_list']);
+Route::get('/user/{id}', [GuestController::class, 'get_user_detail']);
+Route::get('/search', [GuestController::class, 'search_film']);
+
+// route admin
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/admin/genre', [AdminController::class, 'add_genre']);
     Route::post('/admin/film', [AdminController::class, 'add_film']);
@@ -42,6 +44,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/reaction', [UserController::class, 'add_reaction']);
     Route::put('/user/profile', [UserController::class, 'edit_profile_data']);
     Route::put('/user/review/{id}', [UserController::class, 'edit_review']);
-    Route::put('/user/reaction/{id}', [UserController::class, 'edit_reaction']);
     Route::delete('/user/review/{id}', [UserController::class, 'delete_review']);
 });
