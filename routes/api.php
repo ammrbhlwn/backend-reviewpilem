@@ -2,13 +2,19 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::post('/user/register', [AuthController::class, 'register_user']);
 Route::post('/user/login', [AuthController::class, 'login']);
 Route::post('/admin/login', [AuthController::class, 'login_admin']);
+
+// route guest
+Route::get('/film/list', [GuestController::class, 'get_all_film']);
+Route::get('/film/{id}', [GuestController::class, 'get_film_by_id']);
+Route::get('/user/list', [GuestController::class, 'get_user_list']);
+Route::post('/search/{}', [GuestController::class, 'search_film']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'get_all_user']);
