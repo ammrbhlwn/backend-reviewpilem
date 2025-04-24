@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Film;
 use App\Models\Review;
+use App\Models\ReviewReaction;
 use App\Models\UserFilmList;
 use Illuminate\Http\Request;
 
@@ -253,6 +254,71 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Review berhasil dihapus'
+        ], 200);
+    }
+
+    public function add_reaction(Request $request)
+    {
+        $request->validate([
+            'review_id' => 'required|exists:review,id',
+            'is_like' => 'nullable|boolean',
+        ]);
+
+        try {
+            $user = $request->user();
+
+            $reaction = ReviewReaction::where('review_id', $request->review_id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            // Jika reaksi sama
+            if ($reaction && $reaction->is_like == $request->is_like) {
+                return response()->json([
+                    'message' => 'Tidak ada perubahan pada reaction'
+                ], 200);
+            }
+
+            // Jika reaksi sudah ada
+            if ($reaction) {
+                // Proses unlike
+                if ($reaction->is_like == true && $request->is_like === null) {
+                    $reaction->delete();
+                    return response()->json([
+                        'message' => 'Berhasil membatalkan like'
+                    ], 200);
+                }
+
+                // Proses undislike
+                if ($reaction->is_like == false && $request->is_like === null) {
+                    $reaction->delete();
+                    return response()->json([
+                        'message' => 'Berhasil membatalkan dislike'
+                    ], 200);
+                }
+            }
+
+            // Menambahkan reaksi baru
+            if ($request->is_like !== null) {
+                if ($reaction) {
+                    $reaction->delete();
+                }
+
+                // Menambahkan reaksi
+                ReviewReaction::create([
+                    'review_id' => $request->review_id,
+                    'user_id' => $user->id,
+                    'is_like' => $request->is_like ?? false,
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Berhasil memperbarui reaction'
         ], 200);
     }
 }

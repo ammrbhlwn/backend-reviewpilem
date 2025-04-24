@@ -6,18 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReviewReaction extends Model
 {
-    public $timestamps = false;
+    protected $table = 'review_reaction';
 
     protected $fillable = [
         'review_id',
         'user_id',
         'is_like',
-        'is_dislike',
     ];
 
     protected $casts = [
         'is_like' => 'boolean',
-        'is_dislike' => 'boolean',
     ];
 
     public function review()
