@@ -35,10 +35,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 // route user
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user/profile', [UserController::class, 'get_user_by_id']);
+    Route::get('/user/profile', [UserController::class, 'get_profile_data']);
+    Route::post('/user/profile', [UserController::class, 'add_profile_data']);
     Route::post('/user/list', [UserController::class, 'add_film_to_list']);
     Route::post('/user/review', [UserController::class, 'add_review']);
     Route::post('/user/reaction', [UserController::class, 'add_reaction_to_list']);
+    Route::put('/user/profile', [UserController::class, 'edit_profile_data']);
     Route::put('/user/review/{id}', [UserController::class, 'edit_review']);
     Route::put('/user/reaction/{id}', [UserController::class, 'edit_reaction']);
     Route::delete('/user/review/{id}', [UserController::class, 'delete_review']);

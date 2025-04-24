@@ -4,37 +4,83 @@ namespace App\Http\Controllers;
 
 use App\Models\Film;
 use App\Models\Review;
-use App\Models\User;
 use App\Models\UserFilmList;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function get_all_user()
+    public function get_profile_data(Request $request)
     {
-        $users = User::select('id', 'username', 'display_name')
-            ->get();
+        $user = $request->user()->load(['filmLists' => function ($query) {
+            $query->select('films.id', 'judul')->withPivot('status_list');
+        }]);
 
         return response()->json([
-            'data' => $users
+            'data' => [
+                'id' => $user->id,
+                'nama' => $user->nama,
+                'username' => $user->username,
+                'display_name' => $user->display_name,
+                'bio' => $user->bio,
+                'film_list' => $user->filmLists->map(function ($film) {
+                    return [
+                        'id' => $film->id,
+                        'judul' => $film->judul,
+                        'status_list' => $film->pivot->status_list,
+                    ];
+                }),
+            ]
         ], 200);
     }
 
-    public function get_user_by_id($id)
+    public function add_profile_data(Request $request)
     {
-        $user = User::with('watchList')
-            ->select('id', 'username', 'display_name', 'bio')
-            ->find($id);
+        $request->validate([
+            'display_name' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
+        ]);
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        }
+        $user = $request->user();
+        $user->display_name = $request->display_name;
+        $user->bio = $request->bio;
+        $user->save();
 
         return response()->json([
-            'status' => 'success',
-            'data' => $user
+            'message' => 'Data profil berhasil ditambahkan',
+            'data' => [
+                'nama' => $user->nama,
+                'username' => $user->username,
+                'email' => $user->email,
+                'display_name' => $user->display_name,
+                'bio' => $user->bio,
+            ]
+        ], 201);
+    }
+
+    public function edit_profile_data(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string',
+            'username' => 'nullable|string|max:255|regex:/^[a-z0-9_]+$/',
+            'display_name' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
+        ]);
+
+        $user = $request->user();
+        $user->nama = $request->nama;
+        $user->username = $request->username;
+        $user->display_name = $request->display_name;
+        $user->bio = $request->bio;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui',
+            'data' => [
+                'nama' => $user->nama,
+                'username' => $user->username,
+                'display_name' => $user->display_name,
+                'bio' => $user->bio,
+            ]
         ], 200);
     }
 
